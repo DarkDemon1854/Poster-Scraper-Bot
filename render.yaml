@@ -34,7 +34,7 @@ services:
       - key: TIMEZONE
         value: Asia/Kolkata
       - key: UPSTREAM_REPO
-        value: https://github.com/the-piro/pstr
+        value: https://github.com/XalFH/Poster-Scraper-Bot
       - key: UPSTREAM_BRANCH
         value: main
       - key: TMDB_ACCESS_TOKEN
