@@ -1,60 +1,46 @@
 # ruff: noqa: E402
 
-import asyncio
+from config import Config
+Config.load()
+
 from datetime import datetime
 from logging import Formatter
+from pytz import timezone
+from asyncio import gather
 
-from pytz import timezone as tz
 from pyrogram import idle
 
-from config import Config
-from . import LOGGER
-from .core.EchoClient import EchoBot
+from . import LOGGER, bot_loop
+from .core.EchoClient import EchoClient
 from .core.plugs import add_plugs
 from .helper.utils.db import database
 from .helper.utils.bot_cmds import _get_bot_commands
 
-try:
-    from web import _start_web, _ping
-    WEB_OK = True
-except ImportError:
-    WEB_OK = False
-
-
-bot_loop = asyncio.get_event_loop()
-
 
 async def main():
-    from asyncio import gather
+    await database._load_all()
 
     def changetz(*args):
-        return datetime.now(tz(Config.TIMEZONE)).timetuple()
+        return datetime.now(timezone(Config.TIMEZONE)).timetuple()
 
     Formatter.converter = changetz
 
-    await database._load_all()
-
+    # 🔥 EXACT public bot pattern
     await gather(
-        EchoBot.start(),
-        EchoBot.set_bot_commands(_get_bot_commands()),
+        EchoClient.start_bot(),
     )
 
-    me = await EchoBot.get_me()
-    LOGGER.info(f"Echo Bot Started as: @{me.username}")
+    # AFTER client is started
+    await EchoClient.bot.set_bot_commands(_get_bot_commands())
 
     add_plugs()
 
-    if Config.WEB_SERVER and WEB_OK:
-        LOGGER.info("Starting web server...")
-        bot_loop.create_task(_start_web())
-        bot_loop.create_task(_ping(Config.PING_URL, Config.PING_TIME))
-    else:
-        LOGGER.info("Web server disabled")
+    LOGGER.info("Echo Bot fully started")
 
     await idle()
 
-    await EchoBot.stop()
-    LOGGER.info("Echo Client stopped.")
+    await EchoClient.stop()
 
 
 bot_loop.run_until_complete(main())
+bot_loop.run_forever()
