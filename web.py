@@ -3,13 +3,12 @@ from aiohttp import web, ClientSession, ClientTimeout
 
 from config import Config
 
-
 async def _start_web():
     r = web.RouteTableDef()
 
     @r.get("/", allow_head=True)
     async def _root(req):
-        return web.json_response({"status": "running", "bot": "@Echobotz"})
+        return web.json_response({"status": "running", "Creator": "gitHub.com/XalFH"})
 
     @r.get("/health", allow_head=True)
     async def _health(req):
@@ -18,17 +17,11 @@ async def _start_web():
     app = web.Application(client_max_size=30_000_000)
     app.add_routes(r)
 
-    runner = web.AppRunner(app)
+    runner = web.AppRunner(app, access_log=None) 
     await runner.setup()
 
     port = Config.PORT
-
-    try:
-        await web.TCPSite(runner, "0.0.0.0", port).start()
-        print(f"Web server started on port {port}")
-    except OSError as e:
-        print(f"{port}: {e}")
-
+    await web.TCPSite(runner, "0.0.0.0", port).start()
 
 async def _ping(url, interval):
     if not url:
