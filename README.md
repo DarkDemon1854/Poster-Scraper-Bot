@@ -144,7 +144,7 @@ Powerful telegram bot that scrape Posters from multiple OTT platforms & Bypass d
   <summary><strong>Render (One-Click Deploy)</strong></summary>
   
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](
-https://render.com/deploy?repo=https://github.com/the-piro/Poster-Scraper-Bot&branch=deploy
+https://render.com/deploy?repo=https://github.com/XalFH/Poster-Scraper-Bot&branch=deploy
 )
 
 </details>
